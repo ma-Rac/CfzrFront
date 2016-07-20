@@ -1,7 +1,7 @@
 {
-  "name": "react-transform-boilerplate",
+  "name": "CfzR",
   "version": "1.0.0",
-  "description": "A new Webpack boilerplate with hot reloading React components, and error handling on module and component level.",
+  "description": "How does one even cfz someone else?",
   "scripts": {
     "clean": "rimraf dist",
     "build:webpack": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
@@ -26,12 +26,12 @@
     "babel",
     "react-transform"
   ],
-  "author": "Dan Abramov <dan.abramov@me.com> (http://github.com/gaearon)",
+  "author": "Some guy that sold it to me behind a warehouse in south detroit when I was high off my mind on prescription oxycodine",
   "license": "CC0-1.0",
   "bugs": {
-    "url": "https://github.com/gaearon/react-transform-boilerplate/issues"
+    "url": "Let's find out together"
   },
-  "homepage": "https://github.com/gaearon/react-transform-boilerplate",
+  "homepage": "www.google.com",
   "devDependencies": {
     "babel-core": "6.3.15",
     "babel-eslint": "5.0.0-beta4",
