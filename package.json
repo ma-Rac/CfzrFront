@@ -51,7 +51,10 @@
     "webpack-hot-middleware": "2.6.0"
   },
   "dependencies": {
+    "feathers-client": "^1.5.1",
+    "material-ui": "^0.15.2",
     "react": "0.14.3",
-    "react-dom": "0.14.3"
+    "react-dom": "0.14.3",
+    "socket.io-client": "^1.4.8"
   }
 }
