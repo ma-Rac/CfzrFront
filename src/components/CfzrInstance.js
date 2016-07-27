@@ -21,7 +21,9 @@ class CfzrInstance extends React.Component {
       points: 0,
       points2: 0,
       gravity: 5,
-      refresher: null
+      refresher: null,
+      difficulty: 100,
+      prevpoints: 0
     }
   }
 
@@ -31,10 +33,23 @@ class CfzrInstance extends React.Component {
     window.addEventListener("keydown", this.eventHandler.bind(this), false);
     // console.log("gamestats:",this.gamestats);
     alert("ready?");
-    var refresh = setInterval(this.updateGame.bind(component), 100);
+    var refresh = setInterval(this.updateGame.bind(component), this.state.difficulty);
     this.setState({
       refresher: refresh
     })
+  }
+
+  updateDifficulty(dif){
+    clearInterval(this.state.refresher);
+    let component = this;
+    var refresh = setInterval(this.updateGame.bind(component), dif)
+    console.log(dif);
+    console.log(refresh);
+
+    this.setState({
+      refresher: refresh
+    });
+
   }
 
   componentWillUnmount(){
@@ -99,7 +114,7 @@ class CfzrInstance extends React.Component {
     ctx.fillRect(position.x, position.y, 40, 20);
   }
 
-  renderPoints(positions) {
+  renderPoints(positions,dif,prevp) {
     let points = this.state.points;
     let tempEnemy = [];
     positions.map(function(position){
@@ -111,11 +126,24 @@ class CfzrInstance extends React.Component {
       }
     });
 
-    if (this.state.confuzerPosition.x === 0) {
+    if (this.state.confuzerPosition.x < 0) {
       points += 5;
-      this.state.confuzerPosition.x = this.getRandomInt(700, 1200);
     }
-    let returnarr = [points, tempEnemy];
+
+    if (this.state.graviturnerPosition.x < 0) {
+      points = points * 1.5;
+    }
+
+    var difference = points - prevp;
+    console.log("difference", difference,"points", points, "prevpoints", prevp);
+    if (difference > 10 ){
+      if (dif > 10){
+        dif -= 1
+      }
+    }
+
+
+    let returnarr = [points, tempEnemy, dif, prevp];
     return returnarr;
   }
 
@@ -132,11 +160,18 @@ class CfzrInstance extends React.Component {
 
   gravityEffect(player){
     player.y = player.y + this.state.gravity;
+    player.x = player.x - this.state.gravity;
     if (player.y > 380){
       player.y = 380
     };
     if (player.y < 100){
       player.y = 100
+    };
+    if (player.x > 480){
+      player.x = 480
+    };
+    if (player.x < 0){
+      player.x = 0
     };
     return player;
   }
@@ -187,9 +222,22 @@ class CfzrInstance extends React.Component {
       position.x -= position.speed;
       tempEnemy.push(position)
     });
-    var newconfuzer = {x: this.state.confuzerPosition.x -4, y: this.state.confuzerPosition.y}
-    var newgraviturner = {x: this.state.graviturnerPosition.x -4, y: this.state.graviturnerPosition.y}
-    var returned = this.renderPoints(this.state.enemyPositions);
+    var newconfuzer = {x: this.state.confuzerPosition.x -4, y: this.state.confuzerPosition.y};
+    var newgraviturner = {x: this.state.graviturnerPosition.x -4, y: this.state.graviturnerPosition.y};
+
+    if (this.state.confuzerPosition.x < 0) {
+      newconfuzer.x = this.getRandomInt(700, 1200);
+    }
+    if (this.state.graviturnerPosition.x < 0) {
+      newgraviturner.x = this.getRandomInt(1000, 1500);
+    }
+
+
+    var returned = this.renderPoints(this.state.enemyPositions,this.state.difficulty,this.state.prevpoints);
+    console.log("difficulty", returned[2])
+    if (returned[2] != this.state.difficulty){
+      this.updateDifficulty(returned[2]);
+    }
     // console.log("TEMPENEMY", tempEnemy);
     this.setState({
       playerPosition: this.gravityEffect(this.state.playerPosition),
@@ -197,6 +245,8 @@ class CfzrInstance extends React.Component {
       graviturnerPosition: newgraviturner,
       enemyPositions: returned[1],
       points: returned[0],
+      difficulty: returned[2],
+      prevpoints: returned[3]
     });
   }
 
@@ -216,6 +266,22 @@ class CfzrInstance extends React.Component {
     // console.log("other Readme!",pos)
     this.updateGame.bind(this);
   }
+  playerMoveRight(){
+    let pos = this.state.playerPosition;
+    if (this.state.graviturnerPosition.x > 0 && this.state.graviturnerPosition.x < 500) {
+      pos.x -= 30;
+    } else {
+      pos.x += 30;
+    }
+    if (pos.x < 0){
+     pos.x = 0;
+    }
+    if (pos.x > 500){
+      pos.x = 500;
+    }
+    // console.log("other Readme!",pos)
+    this.updateGame.bind(this);
+  }
 
   selectGame(game) {
     game = this.props.game;
@@ -230,12 +296,21 @@ class CfzrInstance extends React.Component {
 
 
   eventHandler(e){
+    // console.log("here",e)
     if (this.state.confuzerPosition.x > 0 && this.state.confuzerPosition.x < 500) {
+      if (e.keyCode == '37'){
+        e.preventDefault();
+        this.playerMoveRight();
+      }
       if (e.keyCode == '40') {
         e.preventDefault();
         this.jumpPlayer();
       }
     } else {
+      if (e.keyCode == '39') {
+        e.preventDefault();
+        this.playerMoveRight();
+      }
       if (e.keyCode == '38') {
         e.preventDefault();
         this.jumpPlayer();
